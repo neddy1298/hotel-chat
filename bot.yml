@@ -1,0 +1,36 @@
+name: Hotel_Real
+desc: Hotel ChatBot
+flows:
+    followed: $include(./flows/followed.yml)
+    fallback: $include(./flows/fallback.yml)
+    home: $include(./flows/home.yml)
+    hotel: $include(./flows/hotel.yml)
+    fasilitas: $include(./flows/fasilitas.yml)
+    booking: $include(./flows/booking.yml)
+    user: $include(./flows/user.yml)
+nlus:
+    ner:
+        type: verstandTagger
+        options:
+            model: ner-jul-14-cnn
+    intent:
+        type: nl
+        options:
+            nluId: 'neddy:Hotel_Real'
+            asIntent: intent
+    entities:
+        type: nl
+        options:
+            nluId: 'neddy:Hotel_Real'
+            token: 917eba71-e50f-49fb-8ad5-3de8a5fe837b
+            flatten: true
+    phone:
+        type: regex
+        options:
+            regex: \d+
+    email:
+        type: regex
+        options:
+            regex: \w+@\w+\.\w+
+config: $include(./config.yml)
+tag: null

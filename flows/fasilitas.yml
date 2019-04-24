@@ -1,0 +1,179 @@
+volatile: true
+intents:
+    initNL:
+        initial: true
+        classifier:
+            nlu: intent
+            match: askFasilitas
+    init:
+        initial: true
+        type: data
+        condition:
+            - payload.destination == 'Fasilitas Kamar' 
+    addDetails:
+        initial: true
+        condition: context.$lastFlow == 'fasilitas'
+        classifier:
+            nlu: intent
+            match: addDetails
+        attributes:
+            kamar:
+                nlu: entities
+                path: tipekamar
+                options:
+                    output: dict
+    getApi:
+        type: command
+        condition: content == 'getApi'
+    kamarChosen:
+        initial: true
+        type: data
+        condition: "payload.fasilitas && payload.id"
+states:
+    init:
+        enter: Kamar
+        initial: true
+        transitions:
+            allApiKamar:
+                condition: intent == 'init' || intent == 'initNL'
+            apiKamar:
+                condition: intent == 'addDetails' || intent == 'kamarChosen'
+                mapping:
+                    context:
+                        fKamar: payload.fasilitas || attributes.kamar || context.fKamar
+                        idKamar: payload.id || context.idKamar
+    allApiKamar:
+        action:
+            - name: Api
+            - name: getApi
+        transitions:
+            pilihanKamar:
+                condition: "intent == 'getApi'"
+                mapping:
+                    context:
+                        fallback: "false"
+                        apiKamars: payload.result
+    pilihanKamar:
+        enter: Kamar
+        action:
+            - name: pilihanKamar
+        transitions:
+            apiKamar:
+                condition: intent == 'kamarChosen' || intent == 'addDetails'
+                mapping:
+                    context:
+                        fKamar: payload.fasilitas || attributes.kamar || context.fKamar
+                        idKamar: payload.id || context.idKamar
+    apiKamar:
+        action:
+            - name: roomApi
+            - name: getApi
+        transitions:
+            fasilitas:
+                condition: "intent == 'getApi'"
+                mapping:
+                    context:
+                        fallback: "false"
+                        apiKamar: payload.result
+
+    fasilitas:
+        end: true
+        action:
+            - name: fasilitas
+            - name: gambar
+            - name: askToBack
+actions:
+    Api:
+      type: api
+      options:
+        method: "GET"
+        uri: "https://neddy-hotelapi.herokuapp.com/api/kamar"
+
+    roomApi:
+      type: api
+      options:
+        method: "GET"
+        uri: "https://neddy-hotelapi.herokuapp.com/api/kamar/$(context.idKamar)"
+
+
+    pilihanKamar:
+        type: template
+        options:
+            type: carousel
+            data: $(context.apiKamars)
+            template:
+                text: Fasilitas $[nama]
+                title: $[nama]
+                thumbnailImageUrl: $[image_file]
+                actions:
+                    - type: postback
+                      label: $[nama]
+                      payload:
+                          fasilitas: $[nama]
+                          id: $[id]
+
+    fasilitas:
+        type: text
+        options:
+            text: $(context.apiKamar.fasilitas)
+
+    gambar:
+        type: template
+        options:
+            type: image
+            items:
+                originalContentUrl: $(context.apiKamar.image_file)
+                previewImageUrl: $(context.apiKamar.image_file)
+
+    getApi:
+        type: command
+        options:
+            command: getApi
+            payload:
+                result: $(result)
+
+    askToBack:
+        type: template
+        options:
+            type: carousel
+            altText: Silahkan pilih
+            items:
+                - text: Ingin kembali ke menu?
+                  title: Konfirmasi
+                  actions:
+                      - type: postback
+                        label: Ya
+                        payload:
+                            confirm: "yes"
+                      - type: postback
+                        label: Tidak
+                        payload:
+                            confirm: "no"
+
+
+methods: 
+    Kamar(ctx): "
+    var tipeKamar = ctx.context.fKamar;
+    if (tipeKamar == 'Single Room')
+    {
+        var id = 1;
+    }
+    else if (tipeKamar == 'Twin Room')
+    {
+        var id = 2;
+    }
+    else if (tipeKamar == 'superior single room')
+    {
+        var id = 3;
+    }
+    else if (tipeKamar == 'Superior Twin Room')
+    {
+        var id = 4;
+    }
+    else if (tipeKamar == 'Family Room')
+    {
+        var id = 5;
+    }
+    ctx.context.idKamar = id;
+    return ctx;
+    "

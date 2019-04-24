@@ -1,0 +1,67 @@
+volatile: true
+intents:
+  initNL:
+    initial: true
+    type: text
+    classifier:
+      nlu: intent
+      match: askInfoHotel
+  init:
+    initial: true
+    type: data
+    condition: payload.destination == 'Info Hotel'
+states:
+  init:
+    initial: true
+    transitions:
+      Hotel:
+        fallback: true
+  Hotel:
+    end: true
+    action:
+      - name: imageHotel
+      - name: imageHotel2
+      - name: infoHotel
+      - name: askToBack
+
+actions:
+  imageHotel:
+    type: template
+    options:
+      type: image
+      items:
+        originalContentUrl: $(config.companyImage)
+        previewImageUrl: $(config.companyImage)
+
+  imageHotel2:
+    type: template
+    options:
+      type: image
+      items:
+        originalContentUrl: $(config.companyImage2)
+        previewImageUrl: $(config.companyImage2)
+  infoHotel:
+    type: text
+    options:
+      text: 
+        - "Hotel $(config.companyName) Memiliki 5 pilihan tipe kamar diantaranya: $(config.Room). 
+          Selain pilihan kamarnya yang beragam, hotel $(config.companyName) beralamat di $(config.companyAddress) 
+          Tempat yang sangat strategis. // Untuk waktu Check In pukul 12:00 dan waktu Check Out pukul 11:00 // 
+          Jika ada yang ingin di tanyakan silahkan hubungi call center kami : 0251443356."
+  askToBack:
+    type: template
+    options:
+      type: carousel
+      altText: Kembali Ke menu?
+      items:
+        - text: Ingin kembali ke menu?
+          title: Konfirmasi
+          actions:
+            - type: postback
+              label: Ya
+              payload:
+                confirm: "yes"
+            - type: postback
+              label: Tidak
+              payload:
+                confirm: "no"

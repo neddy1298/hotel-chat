@@ -1,0 +1,284 @@
+volatile: true
+intents:
+    bookingNL:
+        initial: true
+        classifier:
+            nlu: intent
+            match: askKamar
+    booking:
+        initial: true
+        condition: context.$lastFlow != 'fasilitas'
+        classifier:
+            nlu: intent
+            match: order
+        attributes:
+            kamar:
+                nlu: entities
+                path: tipekamar
+                options:
+                    output: dict
+            day:
+                nlu: entities
+                path: day
+                options:
+                    output: dict
+    addDetails:
+        type: text
+        condition: "!context.tipeKamar || !context.day || !context.when"
+        classifier:
+            nlu: intent
+            match: addDetails
+        attributes:
+            kamar:
+                nlu: entities
+                path: tipekamar
+                options:
+                    output: dict
+            day:
+                nlu: entities
+                path: day
+                options:
+                    output: dict
+    init:
+        initial: true
+        type: data
+        condition:
+            - payload.destination == 'Booking Kamar'
+    kamarChosen:
+        type: data
+        condition: "payload.kamar"
+    yes:
+        initial: false
+        classifier:
+            nlu: intent
+            match: confirm
+    cancel:
+        classifier:
+            nlu: intent
+            match: cancel
+    getAllKamar:
+        type: command
+        condition: content == 'getAllKamar'
+
+states:
+    init:
+        initial: true
+        transitions:
+            askWhen:
+                condition: context.tipeKamar
+                mapping:
+                    context.write: "true"
+            callApi:
+                fallback: true
+        transit:
+            context.tipeKamar: "attributes.kamar || payload.kamar"
+            context.harga: "payload.harga"
+            context.when: "null"
+            context.day: "attributes.day"
+            context.total: "null"
+    callApi:
+        action: 
+            - name: Api
+            - name: getAllKamar
+        transitions:
+            Menu:
+                condition: "intent == 'getAllKamar'"
+                mapping:
+                    context:
+                        fallback: "false"
+                        apiKamar: payload.result
+    Menu:
+        enter: countPrize
+        action:
+            - name: showMenu
+            - name: askMenu
+        transitions:
+            askWhen:
+                condition: context.tipeKamar
+            Menu:
+                condition: "!context.tipeKamar"
+                fallback: true
+        transit:
+            context.tipeKamar: attributes.kamar || payload.kamar
+            context.day: "attributes.day"
+            context.harga: payload.harga || "null"
+            context.write: "true"
+    askWhen:
+        enter: countPrize
+        action:
+            - name: writeRoom
+              condition: context.write
+            - name: dayBook
+        transitions:
+            askDay:
+                condition: 'context.test && !context.day'
+            orderConfirm:
+                condition: context.day && context.when && context.tipeKamar
+            askWhen:
+                condition: "!context.askWhen || intent != 'addDetails'"
+                fallback: true
+        transit:
+            context.write: "false"
+            context.when: content
+            context.test: attributes.day
+
+    askDay:
+        action:
+            - name: writeRoom
+              condition: context.write
+            - name: askDay
+        transitions:
+            orderConfirm:
+                condition: context.day && context.when && context.tipeKamar
+            askWhen:
+                condition: '!context.when'
+            askDay:
+                condition: '!context.day'
+                fallback: true
+        transit:
+            context.day: attributes.day
+            context.write: "false"
+    orderConfirm:
+        enter: countPrize
+        action:
+            - name: confirmation
+        transitions:
+            done:
+                condition: "intent == 'yes'"
+            cancelOrder:
+                condition: intent == 'cancel'
+            orderConfirm:
+                fallback: true
+    cancelOrder:
+        end: true
+        action:
+            - name: cancel
+            - name: toMenu
+        float:
+            priority: 20
+            condition: intent == 'cancel'
+        enter: 
+            data.transit: "true"
+    done:
+        end: true
+        action:
+            name: toUserInfo
+            conditon: intent == "yes"
+        enter:
+            data.tipeKamar: context.tipeKamar
+            data.harga: context.harga
+            data.day: context.day
+            data.when: context.when
+            data.total: context.total
+    exit:
+        end: true
+        action:
+            - name: exit
+        float:
+            priority: 25
+            condition: intent == 'exit'
+        enter: 
+            data.transit: "false"
+actions:
+
+    getAllKamar:
+        type: command
+        options:
+            command: getAllKamar
+            payload:
+                result: $(result)
+    Api:
+      type: api
+      options:
+        method: "GET"
+        uri: "https://neddy-hotelapi.herokuapp.com/api/kamar"
+
+    showMenu:
+        type: template
+        options:
+            type: carousel
+            data: $(context.apiKamar)
+            template:
+                text: Terdapat $[stok] kamar                                  Rp.$[harga]/permalam
+                title: $[nama]
+                thumbnailImageUrl: $[image_file]
+                actions:
+                      - type: postback
+                        label: Pilih
+                        payload:
+                            harga: $[harga]
+                            kamar: $[nama]
+                            
+    askMenu:
+        type: text
+        options:
+            text: Mau tipe kamar yang mana?
+    writeRoom:
+        type: text
+        options:
+            text: Baiklah saya catat $(context.tipeKamar) ya, harga permalamnya Rp.$(context.harga)
+    dayBook:
+        type: text
+        options:
+            text: Kamu mau book tanggal berapa? // ex:"9 Juni 2019, 30 Januari 2020"
+    askDay:
+        type: text
+        options:
+            text: Mau menginap berapa hari?
+    confirmation:
+        type: text
+        options:
+            text: "Tolong konfirmasi ya: Jenis kamarnya $(context.tipeKamar) selama $(context.day) hari mulai dari tanggal $(context.when),dengan total harga Rp.$(context.total). // Apa data diatas sudah benar?"
+    cancel:
+        type: text
+        options:
+            text: "Baiklah saya cancel. Silahkan hubungi lagi jika ingin memesan"
+    toUserInfo:
+        type: command
+        options:
+            command: userInfo
+    toMenu:
+        type: command
+        options:
+            command: menu
+    exit:
+        type: text
+        options:
+            text: "Exit from bot"
+    sayWrong:
+        type: text
+        options:
+            text: Maaf pilihan kamu tidak ada, coba cek lagi ya
+
+methods: 
+    countPrize(ctx): "
+    var tipeKamar = ctx.context.tipeKamar;
+
+    if (tipeKamar == 'Single Room')
+    {
+        var harga = 600000;
+    }
+    else if (tipeKamar == 'Twin Room' || tipeKamar == 'Superior Single Room')
+    {
+        var harga = 1200000;
+    }
+    else if (tipeKamar == 'Superior Twin Room')
+    {
+        var harga = 2400000;
+    }
+    else if (tipeKamar == 'Family Room')
+    {
+        var harga = 3500000;
+    }
+    else
+    {
+        var harga = ctx.context.harga;
+    }
+    var day = ctx.context.day;
+    day = parseInt(day);
+    var total = harga * day;
+    ctx.context.day = day;
+    ctx.context.total = total;
+    ctx.context.harga = harga;
+    return ctx;
+    "

@@ -1,0 +1,54 @@
+fallback: true
+priority: 0
+intents:
+    greet:
+        initial: true
+        classifier:
+            nlu: intent
+            match: greet
+    fallback:
+        fallback: true
+        attributes:
+            nl:
+                nlu: entities
+states:
+    init:
+        initial: true
+        transitions:
+            greeting:
+                condition: intent == "greet"
+            bye:
+                condition: payload.confirm == 'no'
+            other:
+                fallback: true
+    greeting:
+        end: true
+        action:
+            - name: greetBack
+            - name: dasboard
+    bye:
+        end: true
+        action:
+            name: sayBye
+    other:
+        end: true
+        action:
+            name: saySorry
+
+actions:
+    greetBack:
+        type: text
+        options:
+            text: Hai , ada yang bisa $(config.botDisplayName) bantu ?
+    dasboard:
+        type: command
+        options:
+            command: home
+    sayBye:
+        type: text
+        options:
+            text: Baiklah, kalau ingin pesen atau mau tau informasi hotel atau kamar chat $(config.botDisplayName) lagi ya
+    saySorry:
+        type: text
+        options:
+            text: Maaf $(config.botDisplayName) belum mengerti

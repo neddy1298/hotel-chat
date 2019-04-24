@@ -1,0 +1,63 @@
+volatile: true
+intents:
+  menu:
+    initial: true
+    type: command
+    condition: content == 'home'
+  confirmTrue:
+    initial: true
+    type: data
+    condition: payload.confirm == 'yes'
+  finishApi:
+    type: command
+    condition: content == 'finishApi'
+states:
+  init:
+    initial: true
+    transitions:
+      callApi:
+        fallback: true
+  callApi:
+    action:
+      - name: Api
+      - name: finishApi  
+    transitions:
+      menu:
+        condition: "intent == 'finishApi'"
+        mapping:
+          context:
+            fallback: "false"
+            menu: payload.result
+  menu:
+    end: true
+    action:
+      - name: dashboard
+
+actions:
+  Api:
+    type: api
+    options:
+      method: "GET"
+      uri: "https://neddy-hotelapi.herokuapp.com/api/menu"
+
+  finishApi:
+    type: command
+    options:
+      command: finishApi
+      payload:
+          result: $(result)
+
+  dashboard:
+    type: template
+    options:
+      type: carousel
+      data: $(context.menu)
+      template:
+          text: $[keterangan]
+          title: $[menu]
+          thumbnailImageUrl: $[image_file]
+          actions:
+            - type: postback
+              label: $[menu]
+              payload:
+                destination: $[menu]

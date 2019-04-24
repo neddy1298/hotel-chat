@@ -1,0 +1,38 @@
+volatile: true
+intents:
+  getStarted:
+    initial: true
+    type: data
+    condition: "payload.type == 'follow'"
+states:
+  addAsFriend:
+    initial: true
+    transitions:
+      greetUser:
+        fallback: true
+        mapping:
+          context.userId: metadata.lineSenderId
+          context.token: metadata.lineAccessToken
+  greetUser:
+    end: true
+    action:
+      - name: callLineAPI
+      - name: greetAsFriend
+      - name: home
+
+actions:
+  callLineAPI:
+    type: api
+    options:
+      method: "GET"
+      headers:
+        Authorization: "Bearer $(context.token)"
+      uri: "https://api.line.me/v2/bot/profile/$(context.userId)"
+  greetAsFriend:
+    type: text
+    options:
+      text: Halo, $(result.displayName) makasih ya udah jadikan aku teman. Salam Kenal, aku $(config.botDisplayName)! // Nih aku punya pilihan buat kamu
+  home:
+    type: command
+    options:
+      command: home

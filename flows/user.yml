@@ -1,0 +1,117 @@
+volatile: true
+intents:
+  fromBooking:
+    initial: true
+    type: command
+    condition: content == 'userInfo'
+  yes:
+    classifier:
+      nlu: intent
+      match: confirm
+  cancel:
+    classifier:
+      nlu: intent
+      match: cancel
+  userInfo:
+    condition: "!context.name"
+    attributes:
+      name:
+        nlu: ner
+        path: person
+  userPhone:
+    condition: "context.name && !context.phone"
+    attributes:
+      phone:
+        nlu: phone
+  userEmail:
+    condition: "context.name && context.phone && !context.email"
+    attributes:
+      email:
+        nlu: email
+states:
+  init:
+    initial: true
+    transitions:
+      askUser:
+        fallback: true
+    transit:
+      context.name: "null"
+      context.phone: "null"
+      context.email: "null"
+  askUser:
+    action:
+      - name: askName
+        condition: "!context.name"
+      - name: askPhone
+        condition: "context.name && !context.phone"
+      - name: askEmail
+        condition: "context.name && context.phone && !context.email"
+
+    transitions:
+      userConfirm:
+        condition: context.name && context.phone && context.email
+      askUser:
+        fallback: true
+      cancel:
+        condition: intent == 'cancel'
+
+    transit:
+      context.name: attributes.name || context.name
+      context.phone: attributes.phone || context.phone
+      context.email: attributes.email || context.email
+
+  userConfirm:
+    action:
+      - name: confirmation
+    transitions:
+      done:
+        condition: intent == 'yes'
+      cancel:
+        condition: intent == 'cancel'
+      userConfirm:
+        fallback: true
+  done:
+    end: true
+    action:
+      name: done
+    enter:
+      data.transit: "false"
+  cancel:
+    end: true
+    action:
+      - name: cancel
+      - name: toMenu
+    float:
+      priority: 15
+      condition: intent == 'cancel'
+    enter:
+      data.transit: "false"
+actions:
+  askName:
+    type: text
+    options:
+      text: "Ok sekarang isi data berikut ya, di isi dengan benar ya supaya kami bisa menghubungi kamu // Namanya siapa?"
+  askPhone:
+    type: text
+    options:
+      text: "Kalo nomor HP kamu berapa?"
+  askEmail:
+    type: text
+    options:
+      text: "Terakhir nih kalo email kamu apa?"
+  confirmation:
+    type: text
+    options:
+      text: "Tolong konfirmasi lagi ya: kamu memesan kamar $(data.tipeKamar) selama $(data.day) hari mulai dari tanggal $(data.when), atas nama $(context.name) dengan email $(context.email) nomor HP $(context.phone), dengan total harga Rp.$(data.total). // Apa data diatas sudah benar?"
+  done:
+    type: text
+    options:
+      text: "Baik kamar $(data.tipeKamar) untuk $(data.day) hari mulai dari tanggal $(data.when), atas nama $(context.name) dengan email $(context.email) nomor HP $(context.phone), dengan total harga Rp.$(data.total). // Terima kasih telah memesan semoga harimu menyenangkan :)"
+  cancel:
+    type: text
+    options:
+      text: "Baiklah saya cancel. Silahkan hubungi lagi jika ingin memesan."
+  toMenu:
+    type: command
+    options:
+      command: menu

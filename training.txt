@@ -1,0 +1,204 @@
+///GREET///
+halo #intent:greet
+hi #intent:greet
+hello #intent:greet
+hy #intent:greet
+hai #intent:greet
+
+///ORDER///
+pesen kamar (@tipeKamar twin) buat (@day dua hari) dong #intent:order
+pesan kamar(@tipeKamar single) #intent:order
+order(@tipeKamar single room) for (@day one day)#intent:order
+mau booking kamar buat (@tipeKamar sendiri) dong #intent:order
+booking (@tipeKamar twin room) dong #intent:order
+pesen kamar untuk (@tipeKamar berdua) dong #intent:order
+pesan kamar (@tipeKamar superior single) untuk (@day sehari) #intent:order
+order (@tipeKamar super single room) for (@day one day)#intent:order
+booking kamar buat (@tipeKamar keluarga) #intent:order
+booking kamar (@tipeKamar sendiri superior) #intent:order
+sewa kamar (@tipeKamar superior sendiri) buat (@day 3 hari) #intent:order
+mau pesen (@tipeKamar superior twin room) buat (@day seminggu) #intent:order
+pesen kamar (@tipeKamar superior twin room) buat (@day 1 hari) #intent:order
+pesen (@tipeKamar superior twin) (@day 2 hari) #intent:order
+order (@tipeKamar twin superior) #intent:order
+booking (@tipeKamar superior twin) #intent:order
+pengen order (@tipeKamar family room) #intent:order
+pesan kamar buat (@tipeKamar banyak)an #intent:order
+
+///ASK INFOHOTEL///
+Info Hotel #intent:askInfoHotel
+info hotelnya dong #intent:askInfoHotel
+keterangan hotel #intent:askInfoHotel
+
+///ASK INFOKAMAR///
+mau ke info kamar dong #intent:askKamar
+kamarnya apa aja? #intent:askKamar
+ada apa aja #intent:askKamar
+adanya apa aja? #intent:askKamar
+punya apa aja #intent:askKamar
+pilihannya apa #intent:askKamar
+ada apa? #intent:askKamar
+apa aja pilihannya? #intent:askKamar
+punya apa? #intent:askKamar
+info kamar #intent:askKamar
+info kamarya dong #intent:askKamar
+
+///ASK FASILITAS///
+fasilitasnya ? #intent:askFasilitas
+fasility #intent:askFasilitas
+fasilitas #intent:askFasilitas
+
+
+///KAMAR///
+(@tipeKamar single) #intent:addDetails
+(@tipeKamar sendiri) #intent:addDetails
+(@tipeKamar single room) #intent:addDetails
+(@tipeKamar twin) #intent:addDetails
+(@tipeKamar berdua) #intent:addDetails
+(@tipeKamar twin room) dong #intent:addDetails
+(@tipeKamar super single) #intent:addDetails
+(@tipeKamar superior single) #intent:addDetails
+(@tipeKamar super single room) #intent:addDetails
+(@tipeKamar superior single room) #intent:addDetails
+(@tipeKamar super twin) #intent:addDetails
+(@tipeKamar superior twin) #intent:addDetails
+(@tipeKamar super twin room) #intent:addDetails
+(@tipeKamar superior twin room) #intent:addDetails
+(@tipeKamar family) #intent:addDetails
+(@tipeKamar keluarga) #intent:addDetails
+(@tipeKamar banyakan) #intent:addDetails
+(@tipeKamar family room) #intent:addDetails
+
+///DAY///
+(@day 1) #intent:addDetails
+(@day satu) #intent:addDetails
+(@day sehari) #intent:addDetails
+(@day one)#intent:addDetails
+(@day 2) #intent:addDetails
+(@day dua) #intent:addDetails
+(@day two) #intent:addDetails
+(@day 3) #intent:addDetails
+(@day tiga) #intent:addDetails
+(@day three) #intent:addDetails
+(@day 4) #intent:addDetails
+(@day empat) #intent:addDetails
+(@day four)#intent:addDetails
+(@day 5)#intent:addDetails
+(@day lima)#intent:addDetails
+(@day five)#intent:addDetails
+(@day 6)#intent:addDetails
+(@day enam)#intent:addDetails
+(@day six)#intent:addDetails
+(@day 7) #intent:addDetails
+(@day seven) #intent:addDetails
+(@day seminggu) #intent:addDetails
+(@day a week) #intent:addDetails
+(@day one week) #intent:addDetails
+(@day 8)#intent:addDetails
+(@day delapan)#intent:addDetails
+(@day eight)#intent:addDetails
+(@day 9)#intent:addDetails
+(@day sembilan)#intent:addDetails
+(@day nine)#intent:addDetails
+(@day 10)#intent:addDetails
+(@day sepuluh)#intent:addDetails
+(@day ten)#intent:addDetails
+(@day 11)#intent:addDetails
+(@day sebelas)#intent:addDetails
+(@day eleven)#intent:addDetails
+(@day 12)#intent:addDetails
+(@day dua belas)#intent:addDetails
+(@day tweleve)#intent:addDetails
+(@day 13)#intent:addDetails
+(@day tiga belas)#intent:addDetails
+(@day thirteen)#intent:addDetails
+(@day 14)#intent:addDetails
+(@day empat belas)#intent:addDetails
+(@day fourteen)#intent:addDetails
+(@day dua minggu)#intent:addDetails
+(@day 2 minggu)#intent:addDetails
+(@day 15)#intent:addDetails
+(@day lima belas)#intent:addDetails
+(@day fifteen)#intent:addDetails
+(@day 16)#intent:addDetails
+(@day enam belas)#intent:addDetails
+(@day sixteen)#intent:addDetails
+(@day 17)#intent:addDetails
+(@day seventeen)#intent:addDetails
+(@day tujuh belas)#intent:addDetails
+(@day 18)#intent:addDetails
+(@day delapan belas)#intent:addDetails
+(@day eighteen)#intent:addDetails
+(@day 19)#intent:addDetails
+(@day sembilan belas)#intent:addDetails
+(@day nineteen)#intent:addDetails
+(@day 20)#intent:addDetails
+(@day dua puluh)#intent:addDetails
+(@day twenty)#intent:addDetails
+(@day 21)#intent:addDetails
+(@day dua puluh satu)#intent:addDetails
+(@day twenty one)#intent:addDetails
+(@day tiga minggu)#intent:addDetails
+(@day 3 minggu)#intent:addDetails
+(@day 22)#intent:addDetails
+(@day dua puluh dua)#intent:addDetails
+(@day twenty two)#intent:addDetails
+(@day 23)#intent:addDetails
+(@day dua puluh tiga)#intent:addDetails
+(@day twenty three)#intent:addDetails
+(@day 24)#intent:addDetails
+(@day dua puluh empat)#intent:addDetails
+(@day twenty four)#intent:addDetails
+(@day 25)#intent:addDetails
+(@day dua puluh lima)#intent:addDetails
+(@day twenty five)#intent:addDetails
+(@day 26)#intent:addDetails
+(@day dua puluh enam)#intent:addDetails
+(@day twenty six)#intent:addDetails
+(@day 27)#intent:addDetails
+(@day dua puluh tujuh)#intent:addDetails
+(@day twenty seven)#intent:addDetails
+(@day 28)#intent:addDetails
+(@day dua puluh delapan)#intent:addDetails
+(@day twenty eight)#intent:addDetails
+(@day empat minggu)#intent:addDetails
+(@day 4 minggu)#intent:addDetails
+(@day 29)#intent:addDetails
+(@day dua puluh sembilan)#intent:addDetails
+(@day twenty nine)#intent:addDetails
+(@day 30)#intent:addDetails
+(@day tiga puluh)#intent:addDetails
+(@day thirty)#intent:addDetails
+(@day sebulan) #intent:addDetails
+(@day 1 bulan) #intent:addDetails
+(@day satu bulan) #intent:addDetails
+
+///CONFIRM//
+iya #intent:confirm
+sip #intent:confirm
+oke #intent:confirm
+iyes #intent:confirm
+yes #intent:confirm
+ya #intent:confirm
+ok #intent:confirm
+sudah #intent:confirm
+udah #intent:confirm
+bener #intent:confirm
+benar #intent:confirm
+alright #intent:confirm
+true #intent:confirm
+sudah #intent:confirm
+udah #intent:confirm
+
+///CANCEL///
+engga #intent:cancel
+no #intent:cancel
+bukan #intent:cancel
+salah #intent:cancel
+g jadi #intent:cancel
+gak jadi #intent:cancel
+cancel #intent:cancel
+batal #intent:cancel
+gajadi ah #intent:cancel
+gk #intent:cancel
+gak #intent:cancel

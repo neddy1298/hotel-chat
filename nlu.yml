@@ -1,0 +1,182 @@
+name: Hotel_Real
+entities:
+  intent:
+    type: trait
+    profile: default
+    labels:
+      - greet
+      - order
+      - addDetails
+      - askInfoHotel
+      - askKamar
+      - askFasilitas
+      - confirm
+      - cancel
+  tipeKamar:
+    type: dict
+    profile: default
+    dictionary:
+      Single Room:
+        - single room
+        - single
+        - sendiri
+        - sr
+      Twin Room:
+        - twin room
+        - twin
+        - berdua
+        - tr
+      superior single room:
+        - superior single room
+        - superior single
+        - super single
+        - super single room
+        - ssr
+      Superior Twin Room:
+        - superior twin room
+        - superior twin
+        - super twin
+        - super twin room
+        - str
+      Family Room:
+        - family room
+        - family
+        - keluarga
+        - banyak
+  day:
+    type: dict
+    profile: default
+    dictionary:
+      "1":
+        - 1
+        - satu
+        - one
+      "2 ":
+        - 2
+        - dua
+        - two
+      "3":
+        - 3
+        - tiga
+        - three
+      "4":
+        - 4
+        - empat
+        - four
+      "5":
+        - 5
+        - lima
+        - five
+      "6":
+        - 6
+        - enam
+        - six
+      "7":
+        - 7
+        - tujuh
+        - seven
+        - seminggu
+        - satu minggu
+        - a week
+      "8":
+        - 8
+        - delapan
+        - eight
+      "9":
+        - 9
+        - sembilan
+        - nine
+      "10":
+        - 10
+        - sepuluh
+        - ten
+      "11":
+        - 11
+        - sebelas
+        - eleven
+      "12":
+        - 12
+        - dua belas
+        - tweleve
+      "13":
+        - 13
+        - tiga belas
+        - thirteen
+      "14":
+        - 14
+        - empat belas
+        - fourteen
+      "15":
+        - 15
+        - lima belas
+        - fifteen
+      "16":
+        - 16
+        - enam belas
+        - sixteen
+      "17":
+        - 17
+        - tujuh belas
+        - seventeen
+      "18":
+        - 18
+        - delapan belas
+        - eightteen
+      "19":
+        - 19
+        - sembilan belas
+        - nineteen
+      "20":
+        - 20
+        - dua puluh
+        - twenty
+      "21":
+        - 21
+        - dua puluh satu
+        - twenty one
+      "22":
+        - 22
+        - dua puluh dua
+        - twenty two
+      "23":
+        - 23
+        - dua puluh tiga
+        - twenty three
+      "24":
+        - 24
+        - dua puluh empat
+        - twenty four
+      "25":
+        - 25
+        - dua puluh lima
+        - twenty five
+      "26":
+        - 26
+        - dua puluh enam
+        - twenty six
+      "27":
+        - 27
+        - dua puluh tujuh
+        - twenty seven
+      "28":
+        - 28
+        - dua puluh delapan
+        - twenty eight
+      "29":
+        - 29
+        - dua puluh sembilan
+        - twenty nine
+      "30":
+        - 30
+        - tiga puluh
+        - thirty
+        - sebulan
+        - a month
+  super:
+    type: pharse
+    profile: super
+    inherit: kata:nl/kata
+  # dayRegex:
+  #   type: regex
+  #   options:
+  #     regex: "[0-9]"
