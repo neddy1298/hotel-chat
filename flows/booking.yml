@@ -44,6 +44,11 @@ intents:
         type: data
         condition:
             - payload.destination == 'Booking Kamar'
+    init2:
+        initial: true
+        type: data
+        condition:
+            - payload.kamar && payload.harga
     kamarChosen:
         type: data
         condition: "payload.kamar"
@@ -59,13 +64,16 @@ intents:
     getAllKamar:
         type: command
         condition: content == 'getAllKamar'
+    reenter:
+        type: command
+        condition: content == 'reenter'
 
 states:
     init:
         initial: true
         transitions:
             askWhen:
-                condition: context.tipeKamar
+                condition: context.tipeKamar || intent == 'init2'
                 mapping:
                     context.write: "true"
             callApi:
@@ -96,8 +104,7 @@ states:
             askWhen:
                 condition: context.tipeKamar
             Menu:
-                condition: "!context.tipeKamar"
-                fallback: true
+                condition: "!context.tipeKamar || intent == 'reenter' "
         transit:
             context.tipeKamar: attributes.kamar || payload.kamar
             context.day: "attributes.day"
@@ -115,8 +122,7 @@ states:
             orderConfirm:
                 condition: context.day && context.when && context.tipeKamar
             askWhen:
-                condition: "!context.askWhen || intent != 'addDetails'"
-                fallback: true
+                condition: "!context.askWhen || intent != 'addDetails' || intent == 'reenter' "
         transit:
             context.write: "false"
             context.when: content
@@ -133,8 +139,7 @@ states:
             askWhen:
                 condition: '!context.when'
             askDay:
-                condition: '!context.day'
-                fallback: true
+                condition: "!context.day || intent == 'reenter'"
         transit:
             context.day: attributes.day
             context.write: "false"
@@ -148,7 +153,7 @@ states:
             cancelOrder:
                 condition: intent == 'cancel'
             orderConfirm:
-                fallback: true
+                condition: intent == 'reenter'
     cancelOrder:
         end: true
         action:
@@ -240,7 +245,7 @@ actions:
     toMenu:
         type: command
         options:
-            command: menu
+            command: home
     exit:
         type: text
         options:

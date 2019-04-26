@@ -20,7 +20,7 @@ states:
             bye:
                 condition: payload.confirm == 'no'
             other:
-                fallback: true
+                condition: context.$flow != 'booking'
     greeting:
         end: true
         action:

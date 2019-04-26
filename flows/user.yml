@@ -28,6 +28,9 @@ intents:
     attributes:
       email:
         nlu: email
+  reenter:
+    type: command
+    condition: content == 'reenter'
 states:
   init:
     initial: true
@@ -51,7 +54,7 @@ states:
       userConfirm:
         condition: context.name && context.phone && context.email
       askUser:
-        fallback: true
+        condition: intent == 'reenter'
       cancel:
         condition: intent == 'cancel'
 
@@ -69,7 +72,7 @@ states:
       cancel:
         condition: intent == 'cancel'
       userConfirm:
-        fallback: true
+        condition: intent == 'reenter'
   done:
     end: true
     action:
@@ -90,7 +93,7 @@ actions:
   askName:
     type: text
     options:
-      text: "Ok sekarang isi data berikut ya, di isi dengan benar ya supaya kami bisa menghubungi kamu // Namanya siapa?"
+      text: "Ok sekarang isi data berikut, di isi dengan benar ya supaya kami bisa menghubungi kamu // Namanya siapa?"
   askPhone:
     type: text
     options:
@@ -114,4 +117,4 @@ actions:
   toMenu:
     type: command
     options:
-      command: menu
+      command: home

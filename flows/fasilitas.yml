@@ -57,6 +57,7 @@ states:
         enter: Kamar
         action:
             - name: pilihanKamar
+            - name: askMenu
         transitions:
             apiKamar:
                 condition: intent == 'kamarChosen' || intent == 'addDetails'
@@ -111,6 +112,11 @@ actions:
                       payload:
                           fasilitas: $[nama]
                           id: $[id]
+
+    askMenu:
+            type: text
+            options:
+                text: Mau tipe kamar yang mana?
 
     fasilitas:
         type: text
