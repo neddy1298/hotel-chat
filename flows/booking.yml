@@ -85,6 +85,7 @@ states:
             context.day: "attributes.day"
             context.total: "null"
     callApi:
+        enter: removeData
         action: 
             - name: Api
             - name: getAllKamar
@@ -163,18 +164,13 @@ states:
             priority: 20
             condition: intent == 'cancel'
         enter: 
-            data.transit: "true"
+            data:
+                transit: "true"
     done:
         end: true
         action:
             name: toUserInfo
             conditon: intent == "yes"
-        enter:
-            data.tipeKamar: context.tipeKamar
-            data.harga: context.harga
-            data.day: context.day
-            data.when: context.when
-            data.total: context.total
     exit:
         end: true
         action:
@@ -285,5 +281,9 @@ methods:
     ctx.context.day = day;
     ctx.context.total = total;
     ctx.context.harga = harga;
+    return ctx;
+    "
+    removeData(ctx): "
+    ctx.data = {};
     return ctx;
     "

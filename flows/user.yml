@@ -49,12 +49,11 @@ states:
         condition: "context.name && !context.phone"
       - name: askEmail
         condition: "context.name && context.phone && !context.email"
-
     transitions:
       userConfirm:
         condition: context.name && context.phone && context.email
       askUser:
-        condition: intent == 'reenter'
+        fallback: true
       cancel:
         condition: intent == 'cancel'
 
@@ -69,6 +68,17 @@ states:
     transitions:
       done:
         condition: intent == 'yes'
+        enter:
+          data:
+            user: context.name
+            kamar: data.tipeKamar
+            harga: data.harga
+            start_from: data.when
+            hari: data.day
+            phone: context.phone
+            email: context.email
+            total: data.total
+            transit: "false"
       cancel:
         condition: intent == 'cancel'
       userConfirm:
@@ -76,10 +86,9 @@ states:
   done:
     end: true
     action:
-      name: done
-    enter:
-      data.transit: "false"
+      - name: transaksi
   cancel:
+    enter: removeData
     end: true
     action:
       - name: cancel
@@ -87,8 +96,6 @@ states:
     float:
       priority: 15
       condition: intent == 'cancel'
-    enter:
-      data.transit: "false"
 actions:
   askName:
     type: text
@@ -118,3 +125,25 @@ actions:
     type: command
     options:
       command: home
+  transaksi:
+    type: api
+    options:
+      method: "POST"
+      uri: "https://neddy-hotelapi.herokuapp.com/api/transaksi/add"
+      headers:
+        content-type: "application/json"
+        access: "application/json"
+      body:
+        user: $(data.user)
+        kamar: $(data.kamar)
+        harga: $(data.harga)
+        start_from: $(data.start_from)
+        hari: $(data.hari)
+        phone: $(data.phone)
+        email: $(data.email)
+        total: $(data.total)
+methods:
+  removeData(ctx): "
+  ctx.data = {};
+  return ctx;
+  "
