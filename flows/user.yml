@@ -13,24 +13,18 @@ intents:
       nlu: intent
       match: cancel
   userInfo:
-    condition: "!context.name"
+    condition: "!data.name || !data.phone"
     attributes:
       name:
         nlu: ner
         path: person
-  userPhone:
-    condition: "context.name && !context.phone"
-    attributes:
       phone:
         nlu: phone
-  userEmail:
-    condition: "context.name && context.phone && !context.email"
+  email:
+    condition: "data.name && data.phone && !data.email"
     attributes:
       email:
         nlu: email
-  reenter:
-    type: command
-    condition: content == 'reenter'
 states:
   init:
     initial: true
@@ -38,61 +32,46 @@ states:
       askUser:
         fallback: true
     transit:
-      context.name: "null"
-      context.phone: "null"
-      context.email: "null"
+      data:
+        name: "null"
+        phone: "null"
+        email: "null"
   askUser:
     action:
       - name: askName
-        condition: "!context.name"
+        condition: "!data.name"
       - name: askPhone
-        condition: "context.name && !context.phone"
+        condition: "data.name && !data.phone"
       - name: askEmail
-        condition: "context.name && context.phone && !context.email"
+        condition: "data.name && data.phone && !data.email"
+      - name: confirmation
+        condition: "data.name && data.phone && data.email && intent != 'yes'"
+      - name: upload
+        condition: data.name && data.phone && data.email && intent == 'yes'
     transitions:
-      userConfirm:
-        condition: context.name && context.phone && context.email
       askUser:
         fallback: true
       cancel:
         condition: intent == 'cancel'
-
     transit:
-      context.name: attributes.name || context.name
-      context.phone: attributes.phone || context.phone
-      context.email: attributes.email || context.email
+      data:
+        kamar: data.kamar
+        harga: data.harga
+        hari: data.hari
+        total: data.total
+        tanggal: data.tanggal
+        bulan: data.bulan
+        tahun: data.tahun
+        name: attributes.name || data.name
+        phone: attributes.phone || data.phone
+        email: attributes.email || data.email
 
-  userConfirm:
-    action:
-      - name: confirmation
-    transitions:
-      done:
-        condition: intent == 'yes'
-        enter:
-          data:
-            user: context.name
-            kamar: data.tipeKamar
-            harga: data.harga
-            start_from: data.when
-            hari: data.day
-            phone: context.phone
-            email: context.email
-            total: data.total
-            transit: "false"
-      cancel:
-        condition: intent == 'cancel'
-      userConfirm:
-        condition: intent == 'reenter'
-  done:
-    end: true
-    action:
-      - name: transaksi
   cancel:
     enter: removeData
     end: true
     action:
       - name: cancel
-      - name: toMenu
+      - name: toHome
     float:
       priority: 15
       condition: intent == 'cancel'
@@ -112,36 +91,19 @@ actions:
   confirmation:
     type: text
     options:
-      text: "Tolong konfirmasi lagi ya: kamu memesan kamar $(data.tipeKamar) selama $(data.day) hari mulai dari tanggal $(data.when), atas nama $(context.name) dengan email $(context.email) nomor HP $(context.phone), dengan total harga Rp.$(data.total). // Apa data diatas sudah benar?"
-  done:
-    type: text
-    options:
-      text: "Baik kamar $(data.tipeKamar) untuk $(data.day) hari mulai dari tanggal $(data.when), atas nama $(context.name) dengan email $(context.email) nomor HP $(context.phone), dengan total harga Rp.$(data.total). // Terima kasih telah memesan semoga harimu menyenangkan :)"
+      text: "Tolong konfirmasi lagi ya: kamu memesan kamar $(data.kamar) selama $(data.hari) hari mulai dari tanggal $(data.tanggal) bulan $(data.bulan) tahun $(data.tahun), atas nama $(data.name) dengan email $(data.email) nomor HP $(data.phone), dengan total harga Rp.$(data.total). // Apa data diatas sudah benar?"
   cancel:
     type: text
     options:
       text: "Baiklah saya cancel. Silahkan hubungi lagi jika ingin memesan."
-  toMenu:
+  toHome:
     type: command
     options:
       command: home
-  transaksi:
-    type: api
+  upload:
+    type: command
     options:
-      method: "POST"
-      uri: "https://neddy-hotelapi.herokuapp.com/api/transaksi/add"
-      headers:
-        content-type: "application/json"
-        access: "application/json"
-      body:
-        user: $(data.user)
-        kamar: $(data.kamar)
-        harga: $(data.harga)
-        start_from: $(data.start_from)
-        hari: $(data.hari)
-        phone: $(data.phone)
-        email: $(data.email)
-        total: $(data.total)
+      command: fgqtuion120h9fnhvovhg71o8bowi
 methods:
   removeData(ctx): "
   ctx.data = {};

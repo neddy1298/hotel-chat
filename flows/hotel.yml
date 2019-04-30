@@ -44,7 +44,7 @@ actions:
     type: text
     options:
       text: 
-        - "Hotel $(config.companyName) Memiliki 5 pilihan tipe kamar diantaranya: $(config.Room). 
+        - "Hotel $(config.companyName) Memiliki 5 pilihan tipe kamar diantaranya:            $(config.Room) // 
           Selain pilihan kamarnya yang beragam, hotel $(config.companyName) beralamat di $(config.companyAddress) 
           Tempat yang sangat strategis. // Untuk waktu Check In pukul 12:00 dan waktu Check Out pukul 11:00 // 
           Jika ada yang ingin di tanyakan silahkan hubungi call center kami : 0251443356."

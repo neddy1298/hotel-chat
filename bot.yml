@@ -8,6 +8,7 @@ flows:
     fasilitas: $include(./flows/fasilitas.yml)
     booking: $include(./flows/booking.yml)
     user: $include(./flows/user.yml)
+    upload: $include(./flows/upload.yml)
 nlus:
     ner:
         type: verstandTagger

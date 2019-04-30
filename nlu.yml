@@ -12,6 +12,7 @@ entities:
       - askFasilitas
       - confirm
       - cancel
+      - start_from
   tipeKamar:
     type: dict
     profile: default
@@ -171,12 +172,45 @@ entities:
         - tiga puluh
         - thirty
         - sebulan
-        - a month
-  super:
-    type: pharse
-    profile: super
-    inherit: kata:nl/kata
-  # dayRegex:
-  #   type: regex
-  #   options:
-  #     regex: "[0-9]"
+        - a month      
+  bulan:
+    type: dict
+    profile: default
+    dictionary:
+      Januari:
+        - januari
+      Febuary:
+        - febuary
+        - february
+        - febuari
+        - februari
+      Maret:
+        - maret
+      April:
+        - april
+      Mei:
+        - mei
+      Juni:
+        - juni
+      Juli:
+        - juli
+      Agustus:
+        - agustus
+      September:
+        - september
+      Oktober:
+        - oktober
+      November:
+        - november
+      Desember:
+        - desember
+  tahun:
+    type: dict
+    profile: default
+    dictionary:
+      2019:
+        - 2019
+      2020:
+        - 2010
+      2021:
+        - 2021

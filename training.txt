@@ -44,10 +44,26 @@ info kamar #intent:askKamar
 info kamarya dong #intent:askKamar
 
 ///ASK FASILITAS///
-fasilitasnya ? #intent:askFasilitas
+fasilitasnya #intent:askFasilitas
 fasility #intent:askFasilitas
 fasilitas #intent:askFasilitas
 
+///DATE///
+(@tahun 2019) #intent:addDetails
+(@tahun 2020) #intent:addDetails
+(@tahun 2021) #intent:addDetails
+(@bulan januari) #intent:addDetails
+(@bulan febuary) #intent:addDetails
+(@bulan maret) #intent:addDetails
+(@bulan april) #intent:addDetails
+(@bulan mei) #intent:addDetails
+(@bulan juni) #intent:addDetails
+(@bulan juli) #intent:addDetails
+(@bulan agustus) #intent:addDetails
+(@bulan september) #intent:addDetails
+(@bulan oktober) #intent:addDetails
+(@bulan november) #intent:addDetails
+(@bulan desember) #intent:addDetails
 
 ///KAMAR///
 (@tipeKamar single) #intent:addDetails

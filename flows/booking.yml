@@ -7,7 +7,7 @@ intents:
             match: askKamar
     booking:
         initial: true
-        condition: context.$lastFlow != 'fasilitas'
+        condition: data.$lastFlow != 'fasilitas'
         classifier:
             nlu: intent
             match: order
@@ -17,14 +17,14 @@ intents:
                 path: tipekamar
                 options:
                     output: dict
-            day:
+            hari:
                 nlu: entities
                 path: day
                 options:
                     output: dict
     addDetails:
         type: text
-        condition: "!context.tipeKamar || !context.day || !context.when"
+        condition: "!data.kamar || !data.hari "
         classifier:
             nlu: intent
             match: addDetails
@@ -34,11 +34,34 @@ intents:
                 path: tipekamar
                 options:
                     output: dict
-            day:
+            hari:
                 nlu: entities
                 path: day
                 options:
                     output: dict
+    start_from:
+        type: text
+        condition: "data.kamar && data.hari && !data.tanggal && !data.bulan && !data.tahun"
+        classifier:
+            nlu: intent
+            match: addDetails
+        attributes:  
+            tanggal:
+                nlu: entities
+                path: day
+                options:
+                    output: dict
+            bulan:
+                nlu: entities
+                path: bulan
+                options:
+                    output: dict
+            tahun:
+                nlu: entities
+                path: tahun
+                options:
+                    output: dict
+
     init:
         initial: true
         type: data
@@ -72,89 +95,55 @@ states:
     init:
         initial: true
         transitions:
-            askWhen:
-                condition: context.tipeKamar || intent == 'init2'
-                mapping:
-                    context.write: "true"
             callApi:
                 fallback: true
-        transit:
-            context.tipeKamar: "attributes.kamar || payload.kamar"
-            context.harga: "payload.harga"
-            context.when: "null"
-            context.day: "attributes.day"
-            context.total: "null"
+                mapping:
+                    data.kamar: "attributes.kamar || payload.kamar"
+                    data.harga: "payload.harga"
+                    data.hari: "attributes.hari"
+                    data.tanggal: "null"
+                    data.bulan: "null"
+                    data.tahun: "null"
+
     callApi:
-        enter: removeData
-        action: 
+        action:
             - name: Api
             - name: getAllKamar
         transitions:
-            Menu:
-                condition: "intent == 'getAllKamar'"
+            booking:
+                fallback: true
                 mapping:
                     context:
-                        fallback: "false"
                         apiKamar: payload.result
-    Menu:
+    booking:
         enter: countPrize
-        action:
+        action: 
             - name: showMenu
+              condition: '!data.kamar'
             - name: askMenu
-        transitions:
-            askWhen:
-                condition: context.tipeKamar
-            Menu:
-                condition: "!context.tipeKamar || intent == 'reenter' "
-        transit:
-            context.tipeKamar: attributes.kamar || payload.kamar
-            context.day: "attributes.day"
-            context.harga: payload.harga || "null"
-            context.write: "true"
-    askWhen:
-        enter: countPrize
-        action:
+              condition: '!data.kamar'
             - name: writeRoom
-              condition: context.write
-            - name: dayBook
-        transitions:
-            askDay:
-                condition: 'context.test && !context.day'
-            orderConfirm:
-                condition: context.day && context.when && context.tipeKamar
-            askWhen:
-                condition: "!context.askWhen || intent != 'addDetails' || intent == 'reenter' "
-        transit:
-            context.write: "false"
-            context.when: content
-            context.test: attributes.day
-
-    askDay:
-        action:
-            - name: writeRoom
-              condition: context.write
+              condition: 'data.kamar && !data.hari'
             - name: askDay
-        transitions:
-            orderConfirm:
-                condition: context.day && context.when && context.tipeKamar
-            askWhen:
-                condition: '!context.when'
-            askDay:
-                condition: "!context.day || intent == 'reenter'"
-        transit:
-            context.day: attributes.day
-            context.write: "false"
-    orderConfirm:
-        enter: countPrize
-        action:
+              condition: 'data.kamar && !data.hari'
+            - name: start_from
+              condition: 'data.kamar && data.hari && (!data.tanggal || !data.bulan || !data.tahun)'
             - name: confirmation
+              condition: 'data.kamar && data.hari && data.tanggal && data.bulan && data.tahun && intent != "yes"'
+            - name: toUserInfo
+              condition: 'data.kamar && data.hari && data.tanggal && data.bulan && data.tahun && intent == "yes"'
         transitions:
-            done:
-                condition: "intent == 'yes'"
-            cancelOrder:
-                condition: intent == 'cancel'
-            orderConfirm:
-                condition: intent == 'reenter'
+            booking:
+                fallback: true
+        transit:
+            data:
+                kamar: attributes.kamar || payload.kamar || data.kamar || context.kamar
+                harga: payload.harga || data.harga || context.harga
+                hari: data.hari || context.hari
+                tanggal: attributes.tanggal || data.tanggal
+                bulan: attributes.bulan || data.bulan
+                tahun: attributes.tahun || data.tahun
+                total: data.total
     cancelOrder:
         end: true
         action:
@@ -163,25 +152,8 @@ states:
         float:
             priority: 20
             condition: intent == 'cancel'
-        enter: 
-            data:
-                transit: "true"
-    done:
-        end: true
-        action:
-            name: toUserInfo
-            conditon: intent == "yes"
-    exit:
-        end: true
-        action:
-            - name: exit
-        float:
-            priority: 25
-            condition: intent == 'exit'
-        enter: 
-            data.transit: "false"
+        enter: removeData
 actions:
-
     getAllKamar:
         type: command
         options:
@@ -205,7 +177,7 @@ actions:
                 thumbnailImageUrl: $[image_file]
                 actions:
                       - type: postback
-                        label: Pilih
+                        label: $[nama]
                         payload:
                             harga: $[harga]
                             kamar: $[nama]
@@ -217,11 +189,11 @@ actions:
     writeRoom:
         type: text
         options:
-            text: Baiklah saya catat $(context.tipeKamar) ya, harga permalamnya Rp.$(context.harga)
-    dayBook:
+            text: Baiklah saya catat $(data.kamar) ya, harga permalamnya Rp.$(data.harga)
+    start_from:
         type: text
         options:
-            text: Kamu mau book tanggal berapa? // ex:"9 Juni 2019, 30 Januari 2020"
+            text: Kamu mau book tanggal berapa? // contoh:"29 April 2019"
     askDay:
         type: text
         options:
@@ -229,7 +201,7 @@ actions:
     confirmation:
         type: text
         options:
-            text: "Tolong konfirmasi ya: Jenis kamarnya $(context.tipeKamar) selama $(context.day) hari mulai dari tanggal $(context.when),dengan total harga Rp.$(context.total). // Apa data diatas sudah benar?"
+            text: "Tolong konfirmasi ya: Jenis kamarnya $(data.kamar) selama $(data.hari) hari mulai dari tanggal $(data.tanggal) bulan $(data.bulan) tahun $(data.tahun) ,dengan total harga Rp.$(data.total). // Apa data diatas sudah benar?"
     cancel:
         type: text
         options:
@@ -250,37 +222,46 @@ actions:
         type: text
         options:
             text: Maaf pilihan kamu tidak ada, coba cek lagi ya
+    startfrom:
+        type: command
+        options:
+            command: start_from
 
 methods: 
     countPrize(ctx): "
-    var tipeKamar = ctx.context.tipeKamar;
+    var kamar = ctx.data.kamar;
 
-    if (tipeKamar == 'Single Room')
+    if (kamar == 'Single Room')
     {
         var harga = 600000;
     }
-    else if (tipeKamar == 'Twin Room' || tipeKamar == 'Superior Single Room')
+    else if (kamar == 'Twin Room' || kamar == 'Superior Single Room')
     {
         var harga = 1200000;
     }
-    else if (tipeKamar == 'Superior Twin Room')
+    else if (kamar == 'Superior Twin Room')
     {
         var harga = 2400000;
     }
-    else if (tipeKamar == 'Family Room')
+    else if (kamar == 'Family Room')
     {
         var harga = 3500000;
     }
     else
     {
-        var harga = ctx.context.harga;
+        var harga = ctx.data.harga;
     }
-    var day = ctx.context.day;
+    var day = ctx.data.hari || ctx.attributes.hari;
     day = parseInt(day);
     var total = harga * day;
-    ctx.context.day = day;
-    ctx.context.total = total;
-    ctx.context.harga = harga;
+    ctx.data.hari = day;
+    ctx.data.total = total;
+    ctx.data.kamar = ctx.data.kamar;
+    ctx.data.harga = harga;
+    ctx.data.kamar = ctx.data.kamar;
+    ctx.data.hari = ctx.data.hari;
+    ctx.data.harga = ctx.data.harga;
+    ctx.data.total = ctx.data.total;
     return ctx;
     "
     removeData(ctx): "

@@ -1,0 +1,40 @@
+intents:
+    init:
+        initial: true
+        type: command
+        condition: content == 'fgqtuion120h9fnhvovhg71o8bowi'
+states:
+    init:
+        initial: true
+        transitions:
+            transaksi:
+                fallback: true
+    transaksi:
+        end: true
+        action:
+            - name: transaksi
+            - name: done
+actions:
+    transaksi:
+        type: api
+        options:
+            method: "POST"
+            uri: "https://neddy-hotelapi.herokuapp.com/api/transaksi/add"
+            headers:
+                content-type: "application/json"
+                accept: "application/json"
+            body:
+                user: $(data.name)
+                kamar: $(data.kamar)
+                harga: $(data.harga)
+                start_from: $(data.tanggal) - $(data.bulan) - $(data.tahun)
+                hari: $(data.hari)
+                phone: $(data.phone)
+                email: $(data.email)
+                total: $(data.total)
+
+
+    done:
+        type: text
+        options:
+            text: "Baik kamar $(data.kamar) untuk $(data.hari) hari mulai dari tanggal $(data.tanggal) bulan $(data.bulan) tahun $(data.tahun), atas nama $(data.name) dengan email $(data.email) nomor HP $(data.phone), dengan total harga Rp.$(data.total). // Terima kasih telah memesan semoga harimu menyenangkan :)"
