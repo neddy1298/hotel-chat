@@ -1,4 +1,4 @@
-name: Hotel_Real
+name: HotelBot-NL
 entities:
   intent:
     type: trait
@@ -18,29 +18,22 @@ entities:
     profile: default
     dictionary:
       Single Room:
-        - single room
         - single
         - sendiri
         - sr
       Twin Room:
-        - twin room
         - twin
         - berdua
         - tr
-      superior single room:
-        - superior single room
+      Superior Single Room:
         - superior single
         - super single
-        - super single room
         - ssr
       Superior Twin Room:
-        - superior twin room
         - superior twin
         - super twin
-        - super twin room
         - str
       Family Room:
-        - family room
         - family
         - keluarga
         - banyak
@@ -172,7 +165,7 @@ entities:
         - tiga puluh
         - thirty
         - sebulan
-        - a month      
+        - a month
   bulan:
     type: dict
     profile: default
@@ -190,6 +183,7 @@ entities:
         - april
       Mei:
         - mei
+        - may
       Juni:
         - juni
       Juli:
@@ -211,6 +205,4 @@ entities:
       2019:
         - 2019
       2020:
-        - 2010
-      2021:
-        - 2021
+        - 2020

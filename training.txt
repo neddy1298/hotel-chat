@@ -211,6 +211,8 @@ engga #intent:cancel
 no #intent:cancel
 bukan #intent:cancel
 salah #intent:cancel
+belum #intent:cancel
+belom #intent:cancel
 g jadi #intent:cancel
 gak jadi #intent:cancel
 cancel #intent:cancel

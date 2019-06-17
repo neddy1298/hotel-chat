@@ -41,11 +41,11 @@ intents:
                     output: dict
     start_from:
         type: text
-        condition: "data.kamar && data.hari && !data.tanggal && !data.bulan && !data.tahun"
+        condition: "data.kamar && data.hari && (!data.tanggal || !data.bulan || !data.tahun)"
         classifier:
             nlu: intent
             match: addDetails
-        attributes:  
+        attributes:
             tanggal:
                 nlu: entities
                 path: day
@@ -117,7 +117,7 @@ states:
                         apiKamar: payload.result
     booking:
         enter: countPrize
-        action: 
+        action:
             - name: showMenu
               condition: '!data.kamar'
             - name: askMenu
@@ -126,8 +126,12 @@ states:
               condition: 'data.kamar && !data.hari'
             - name: askDay
               condition: 'data.kamar && !data.hari'
-            - name: start_from
-              condition: 'data.kamar && data.hari && (!data.tanggal || !data.bulan || !data.tahun)'
+            - name: tanggal
+              condition: 'data.kamar && data.hari && !data.tanggal'
+            - name: bulan
+              condition: 'data.kamar && data.hari && data.tanggal && !data.bulan'
+            - name: tahun
+              condition: 'data.kamar && data.hari && data.tanggal && data.bulan && !data.tahun '
             - name: confirmation
               condition: 'data.kamar && data.hari && data.tanggal && data.bulan && data.tahun && intent != "yes"'
             - name: toUserInfo
@@ -181,19 +185,27 @@ actions:
                         payload:
                             harga: $[harga]
                             kamar: $[nama]
-                            
+
     askMenu:
         type: text
         options:
-            text: Mau tipe kamar yang mana?
+            text: Mau tipe kamar yang mana? // Kamu bisa mengetik "batal" atau "cancel" kalau mau membatalkan orderan
     writeRoom:
         type: text
         options:
             text: Baiklah saya catat $(data.kamar) ya, harga permalamnya Rp.$(data.harga)
-    start_from:
+    tanggal:
         type: text
         options:
-            text: Kamu mau book tanggal berapa? // contoh:"29 April 2019"
+            text: Kamu mau book tanggal berapa?
+    bulan:
+        type: text
+        options:
+            text: Kamu mau book bulan apa?
+    tahun:
+        type: text
+        options:
+            text: Kamu mau book tahun berapa?
     askDay:
         type: text
         options:
@@ -227,7 +239,7 @@ actions:
         options:
             command: start_from
 
-methods: 
+methods:
     countPrize(ctx): "
     var kamar = ctx.data.kamar;
 
@@ -235,7 +247,7 @@ methods:
     {
         var harga = 600000;
     }
-    else if (kamar == 'Twin Room' || kamar == 'Superior Single Room')
+    else if (kamar == 'Twin Room' || kamar == 'superior single room')
     {
         var harga = 1200000;
     }

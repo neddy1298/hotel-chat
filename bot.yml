@@ -17,13 +17,13 @@ nlus:
     intent:
         type: nl
         options:
-            nluId: 'neddy:Hotel_Real'
+            nluId: 'Hotel:HotelBot-NL'
             asIntent: intent
     entities:
         type: nl
         options:
-            nluId: 'neddy:Hotel_Real'
-            token: 917eba71-e50f-49fb-8ad5-3de8a5fe837b
+            nluId: 'Hotel:HotelBot-NL'
+            token: 40785285-e890-4ba8-bcc9-f63196b01ed7
             flatten: true
     phone:
         type: regex
